@@ -7,13 +7,16 @@ const auth = getAuth(app);
 
 const LoginRB = () => {
 
-    const [success, setSuccess] = useState(false)
+    const [success, setSuccess] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
+
     const handleSubmit = event => {
         event.preventDefault();
         setSuccess(false);
         const form = event.target;
         const email = form.email.value;
         const password = form.password.value;
+        console.log(email, password);
 
         signInWithEmailAndPassword(auth, email, password)
             .then(result => {
@@ -26,17 +29,33 @@ const LoginRB = () => {
             })
     }
 
+    const handleEmailBlur = event => {
+        const email = event.target.value;
+        setUserEmail(email);
+        console.log(email)
+    }
     const handleForgetPassword = () => {
-        sendPasswordResetEmail(auth,)
+        if (!userEmail) {
+            alert('please enter your email address')
+        }
+        sendPasswordResetEmail(auth, userEmail)
+            .then(() => {
+                alert('password reset email sent')
+            })
+            .catch(error => {
+                console.error('error', error)
+            })
     }
 
     return (
         <div className='w-50 mx-auto'>
             <h3 className='text-success'>please login!!!</h3>
             <form onSubmit={handleSubmit}>
+
+
                 <div className="mb-3">
                     <label htmlFor="formGroupExampleInput" className="form-label">Your Email</label>
-                    <input type="email" name='email' className="form-control" id="formGroupExampleInput" placeholder="Your Email" required />
+                    <input onBlur={handleEmailBlur} type="email" name='email' className="form-control" id="formGroupExampleInput" placeholder="Your Email" required />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="formGroupExampleInput2" className="form-label">Your Password</label>
